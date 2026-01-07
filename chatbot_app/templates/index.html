@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FA's Choice - Student Information Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <button class="logout-btn" onclick="logout()">Logout</button>
+    <style>
+        /* Add this new background style */
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(rgba(47, 57, 75, 0.7), rgba(47, 57, 75, 0.7)),
+                        url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* Keep existing styles below, just modified the body background */
+        
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        .app-container {
+            width: 100%;
+            max-width: 900px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 90vh;
+            backdrop-filter: blur(5px);
+        }
+
+      
+        
+        .app-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .app-header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 150px;
+            height: 100%;
+            background: url('https://img.icons8.com/color/96/000000/school-building.png') no-repeat center right;
+            background-size: contain;
+            opacity: 0.1;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-icon {
+            font-size: 28px;
+            margin-right: 10px;
+            color: var(--accent-color);
+        }
+        
+        .logo-text {
+            font-size: 22px;
+            font-weight: 600;
+        }
+        
+        .logo-subtext {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 3px;
+        }
+        
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.9);
+            background-image: linear-gradient(rgba(245, 245, 245, 0.9), rgba(245, 245, 245, 0.9)), 
+                          url('https://img.icons8.com/ios/50/000000/student-center.png');
+            background-repeat: repeat;
+            background-size: 50px;
+            background-blend-mode: soft-light;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 15px 20px;
+            border-radius: 20px;
+            max-width: 80%;
+            word-wrap: break-word;
+            line-height: 1.5;
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+            font-size: 15px;
+            transition: transform 0.2s ease;
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            margin-left: auto;
+            border-radius: 20px 20px 5px 20px;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            color: #2c3e50;
+            margin-right: auto;
+            border-radius: 20px 20px 20px 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(44, 62, 80, 0.1);
+        }
+
+        .bot-message::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 15px;
+            width: 20px;
+            height: 20px;
+            background: url('https://img.icons8.com/fluency/48/000000/chat-bubble.png') no-repeat;
+            background-size: contain;
+            opacity: 0.1;
+        }
+
+        .chat-input-container {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            border-top: 1px solid rgba(44, 62, 80, 0.1);
+            display: flex;
+            gap: 10px;
+            backdrop-filter: blur(5px);
+        }
+
+        #user-input {
+            flex: 1;
+            padding: 14px 20px;
+            border: 2px solid rgba(44, 62, 80, 0.1);
+            border-radius: 30px;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 15px;
+        }
+
+        #user-input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.1);
+        }
+
+        #send-button {
+            padding: 14px 25px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #send-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        #send-button::before {
+            content: '➤';
+            font-size: 14px;
+        }
+
+        .timestamp {
+            font-size: 10px;
+            opacity: 0.6;
+            margin-top: 8px;
+            text-align: right;
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Add scrollbar styling */
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(44, 62, 80, 0.2);
+            border-radius: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: rgba(44, 62, 80, 0.3);
+        }
+
+        .app-header {
+    background: var(--primary-color);
+    color: white;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.logout-btn {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    margin-right: 10px; /* Moves the button slightly to the left */
+}
+
+.logout-btn:hover {
+    background: #c0392b;
+    transform: scale(1.05);
+}
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="app-header">
+            <div class="logo">
+                <div class="logo-icon">🎓</div>
+                <div>
+                    <div class="logo-text">FA's Choice</div>
+                    <div class="logo-subtext">Student Information Portal</div>
+                </div>
+            </div>
+            
+            
+        
+        </div>
+        <div class="chat-container">
+            <div class="chat-messages" id="chat-messages">
+                <div class="message bot-message">
+                    Welcome to FA's Choice Student Information Portal. How may I assist you today?
+                    <div class="timestamp">Just now</div>
+                </div>
+            </div>
+            
+            <div class="chat-input-container">
+                <input type="text" id="user-input" placeholder="Type your message here..." autocomplete="off">
+                <button id="send-button">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatMessages = document.getElementById('chat-messages');
+            const userInput = document.getElementById('user-input');
+            const sendButton = document.getElementById('send-button');
+
+            function getCurrentTime() {
+                const now = new Date();
+                return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+
+            function addMessage(message, isUser) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+                messageDiv.innerHTML = `${message}<div class="timestamp">${getCurrentTime()}</div>`;
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            function sendMessage() {
+                const message = userInput.value.trim();
+                if (message === '') return;
+
+                addMessage(message, true);
+                userInput.value = '';
+
+                fetch('/get_response/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: `message=${encodeURIComponent(message)}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.response) {
+                        addMessage(data.response, false);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    addMessage("Sorry, I'm having trouble responding right now. Please try again later.", false);
+                });
+            }
+
+            sendButton.addEventListener('click', sendMessage);
+            userInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            // Focus input field on load
+            userInput.focus();
+        });
+
+        function logout() {
+            window.location.href = '/logout/';
+        }
+    </script>
+</body>
+</html>
